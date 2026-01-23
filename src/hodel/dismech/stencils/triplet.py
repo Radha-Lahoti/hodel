@@ -155,9 +155,12 @@ class Triplet(BaseTriplet):
 @register_dataclass
 @dataclass(frozen=True)
 class ParametrizedDERTriplet(Triplet):
-    """DER with constant diagonal stiffness matrix where [EA1, EA2, EI1, EI2, GJ] is passed as Theta."""
+    """DER with constant diagonal stiffness matrix where [EA, EI1, EI2, GJ] is passed as Theta."""
 
     def get_K(self, del_strain: jax.Array, Theta: jaxtyping.PyTree) -> jax.Array:
         l_k = self.l_k
         inv_v_k = 1 / jnp.mean(self.l_k)  # voronoi length
-        return jnp.diag(Theta * jnp.array([l_k[0], l_k[1], inv_v_k, inv_v_k, inv_v_k]))
+        full_Theta = jnp.array([Theta[0], Theta[0], Theta[1], Theta[2], Theta[3]])
+        return jnp.diag(
+            full_Theta * jnp.array([l_k[0], l_k[1], inv_v_k, inv_v_k, inv_v_k])
+        )
