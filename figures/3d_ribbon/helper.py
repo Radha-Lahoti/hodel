@@ -6,9 +6,36 @@ import jax
 import jax.numpy as jnp
 from jax.tree_util import register_dataclass
 import jaxtyping
+import flax.linen as nn
 
 import hodel
 import hodel.dismech as dismech
+
+
+class HoDELNN(nn.Module):
+    hidden_size: int
+
+    @nn.compact
+    def __call__(self, x: jax.Array) -> jax.Array:
+        init = nn.initializers.variance_scaling(0.01, "fan_in", "truncated_normal")
+        w1 = self.param("w1", init, (x.shape[-1], self.hidden_size))
+        x = nn.softplus(jnp.dot(x, jnp.abs(w1)))
+        w2 = self.param("w2", init, (self.hidden_size, self.hidden_size))
+        x = nn.softplus(jnp.dot(x, jnp.abs(w2)))
+        wf = self.param(
+            "wf", nn.initializers.truncated_normal(1e-4), (self.hidden_size, 1)
+        )
+        return jnp.squeeze(jnp.dot(x, jnp.abs(wf)))
+
+
+class NN(nn.Module):
+    hidden_size: int
+
+    @nn.compact
+    def __call__(self, x: jax.Array) -> jax.Array:
+        x = nn.softplus(nn.Dense(self.hidden_size)(x))
+        x = nn.softplus(nn.Dense(self.hidden_size)(x))
+        return nn.Dense(1)(x)[0] ** 2  # For positive
 
 
 @register_dataclass
@@ -68,7 +95,7 @@ def update_state(
 
 
 def get_energy_fn(
-    triplets: dismech.Triplet,
+    triplets: dismech.DERTriplet,
 ) -> Callable[
     [jax.Array, jax.Array, jaxtyping.PyTree, TripletAux, dismech.StaticState], jax.Array
 ]:
@@ -98,7 +125,15 @@ def animate_rod(sim: hodel.HODEL, lambdas, xf, aux):
     return dismech.animate(lambdas, qs, aux.top)
 
 
-def get_triplets(E: float = 1e6, w: float = 0.03, t: float = 0.001):
+def get_triplets(
+    E: float = 1e6,
+    w: float = 0.03,
+    t: float = 0.001,
+    key: jax.Array = jax.random.PRNGKey(42),
+    der: bool = False,
+    icnn: bool = True,
+    from_x: bool = False,
+):
     geom = dismech.Geometry(
         rod_r0=0.0,
         shell_h=0.0,
@@ -115,14 +150,53 @@ def get_triplets(E: float = 1e6, w: float = 0.03, t: float = 0.001):
         poisson_rod=0.5,
         poisson_shell=0,
     )
+    if icnn:
+        model = HoDELNN(10)
+    else:
+        model = NN(10)
+
+    @register_dataclass
+    @dataclass(frozen=True)
+    class NNTriplet(dismech.DERTriplet):
+        """3 node spring where Theta is parameters for a NN."""
+
+        def get_psi(self, del_strain: jax.Array, Theta: jaxtyping.PyTree) -> jax.Array:
+            k1, k2, tau = del_strain[2], del_strain[3], del_strain[4]
+            features = jnp.array(
+                [
+                    k1**2,
+                    k2**2,
+                    tau**2,
+                    (k1 * tau) ** 2,
+                    (k2 * tau) ** 2,
+                ]
+            )
+            return model.apply(Theta, features)  # type: ignore
+
+    @register_dataclass
+    @dataclass(frozen=True)
+    class XtoENNTriplet(dismech.DERTriplet):
+        def get_energy(
+            self, state: dismech.StaticState, Theta: jaxtyping.PyTree
+        ) -> jax.Array:
+            return model.apply(Theta, state.q)  # type: ignore
 
     mesh = dismech.Mesh.from_txt("data/ribbon.txt")
 
-    top, state0, mass, K, triplets = dismech.from_legacy_custom(
-        mesh, geom, mat, dismech.ParametrizedDERTriplet
-    )
-    K = jnp.array([K[0], K[2], K[3], K[4]])
-    assert type(triplets) is dismech.ParametrizedDERTriplet
+    if from_x:
+        factory = XtoENNTriplet.init
+        params = model.init(key, jnp.empty(123))  # hard coded but state.q
+    else:
+        factory = NNTriplet.init
+        params = model.init(key, jnp.empty(5))
+
+    if der:
+        top, state0, mass, triplets, _ = dismech.from_legacy(mesh, geom, mat)
+    else:
+        top, state0, mass, triplets, _ = dismech.from_legacy(
+            mesh, geom, mat, triplet_factory=factory
+        )
+    assert isinstance(triplets, dismech.DERTriplet)
     idx_b, idx_f = get_indices(
         state0.q, top, jnp.array([0, 1, 29, 30]), jnp.array([0, 29])
     )
@@ -139,4 +213,4 @@ def get_triplets(E: float = 1e6, w: float = 0.03, t: float = 0.001):
     def get_aux(xb_m: jax.Array) -> TripletAux:
         return TripletAux(top, idx_f, idx_b, xb_m)
 
-    return sim, state0, state0.q[idx_f], K, get_aux
+    return sim, state0, state0.q[idx_f], params, get_aux

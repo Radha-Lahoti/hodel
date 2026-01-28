@@ -1,5 +1,5 @@
 #!/bin/bash
-methods=("hodel" "pinn" "deq")
+methods=("hodel" "pinn" "deq" "node")
 noise_levels=(0.001 0.01 0.03)
 for m in "${methods[@]}"; do
     for n in "${noise_levels[@]}"; do

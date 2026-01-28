@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Self
 from dataclasses import dataclass
 
 import jax
@@ -95,7 +96,8 @@ class DERTriplet(BaseTriplet):
         EI: jax.Array,
         GJ: jax.Array,
         state: StaticState,
-    ) -> DERTriplet:
+        **kwargs,
+    ) -> Self:
         diag = jnp.concat(
             [
                 EA * l_k,  # l_k is [l_k0, l_k1]
@@ -116,6 +118,7 @@ class DERTriplet(BaseTriplet):
             l_k=l_k,
             ref_index=ref_index,
             K=K,
+            **kwargs,
         )
 
     def get_K(self, del_strain: jax.Array, Theta: jaxtyping.PyTree) -> jax.Array:
@@ -137,6 +140,7 @@ class Triplet(BaseTriplet):
         l_k: jax.Array,
         ref_index: jax.Array,
         state: StaticState,
+        **kwargs,
     ) -> Triplet:
         nat_strain = cls._static_get_strain(
             node_dofs, edge_dofs, dir_dofs, edge_signs, l_k, ref_index, state
@@ -149,6 +153,7 @@ class Triplet(BaseTriplet):
             edge_signs=edge_signs,
             l_k=l_k,
             ref_index=ref_index,
+            **kwargs,
         )
 
 

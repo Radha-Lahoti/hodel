@@ -29,20 +29,26 @@ class Stencil:
 
         Args:
             state (StaticState): StaticState object.
-            Theta (jaxtyping.PyTree): Parameters for get_K(del_strain, Theta).
+            Theta (jaxtyping.PyTree): Parameters for get_K(del_strain, Theta) and get_psi(del_strain, Theta).
 
         Returns:
             jax.Array:
         """
         del_strain = self.get_strain(state) - self.nat_strain
-        return self._core_energy_func(del_strain, Theta)
+        return self._core_energy_func(del_strain, Theta) + self.get_psi(
+            del_strain, Theta
+        )
 
     def _core_energy_func(
         self, del_strain: jax.Array, Theta: jaxtyping.PyTree
     ) -> jax.Array:
         return 0.5 * del_strain.T @ self.get_K(del_strain, Theta) @ del_strain
 
-    def get_K(self, del_strain: jax.Array, Theta: jaxtyping.PyTree) -> jax.Array: ...
+    def get_K(self, del_strain: jax.Array, Theta: jaxtyping.PyTree) -> jax.Array:
+        return jnp.zeros((del_strain.shape[0], del_strain.shape[0]))
+
+    def get_psi(self, del_strain: jax.Array, Theta: jaxtyping.PyTree) -> jax.Array:
+        return jnp.array(0.0)
 
     @staticmethod
     def get_stretch_strain(n0: jax.Array, n1: jax.Array, l_k: jax.Array) -> jax.Array:

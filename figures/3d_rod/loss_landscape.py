@@ -11,8 +11,8 @@ from helper import get_triplets, TripletAux
 jax.config.update("jax_enable_x64", True)
 
 method_dict = {
-    "hodel": hodel.Method.Minimization,
-    "pinn": hodel.Method.Residual,
+    "hodel": hodel.Method.HODEL,
+    "pinn": hodel.Method.PINN,
     "deq": hodel.Method.DEQ,
     "node": hodel.Method.ODE,
 }
@@ -121,9 +121,9 @@ if __name__ == "__main__":
                 scale = jnp.linalg.norm(pred) + 1e-8
                 return res / scale
 
-            if method == hodel.Method.Residual:
+            if method == hodel.Method.PINN:
                 res_fn = res_residual
-            elif method == hodel.Method.Minimization:
+            elif method == hodel.Method.HODEL:
                 res_fn = solve_residual
             elif method == hodel.Method.ODE:
                 res_fn = ode_residual
@@ -140,7 +140,7 @@ if __name__ == "__main__":
     H = get_accumulated_hessian(K, method) / batch_xf_stars.shape[0]
 
     # Use root h for eigenvector for normality
-    if method == hodel.Method.Residual:
+    if method == hodel.Method.PINN:
         data = jnp.load("data/pinn_H.npz")
     else:
         data = jnp.load("data/root_H.npz")

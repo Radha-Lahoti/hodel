@@ -1,3 +1,4 @@
+from typing import TypeVar, Callable
 from .state import StaticState
 from .connectivity import Connectivity
 from .stencils import (
@@ -39,10 +40,17 @@ __all__ = [
     "SimParams",
 ]
 
+T = TypeVar("T", bound=DERTriplet)
+H = TypeVar("H", bound=DESHinge)
+
 
 def from_legacy(
-    mesh: Mesh, geom: Geometry, mat: Material
-) -> tuple[Connectivity, StaticState, jax.Array, DERTriplet | None, DESHinge | None]:
+    mesh: Mesh,
+    geom: Geometry,
+    mat: Material,
+    triplet_factory: Callable[..., T] = DERTriplet.init,
+    hinge_factory: Callable[..., H] = DESHinge.init,
+) -> tuple[Connectivity, StaticState, jax.Array, T | None, H | None]:
     """Get DER/DES from legacy classes.
 
     Args:
@@ -67,7 +75,6 @@ def from_legacy(
         )
     )
     state = StaticState.init(q, top)
-
     mass = get_mass(mesh, geom, mat)
 
     triplets = hinges = None
@@ -104,7 +111,7 @@ def from_legacy(
         bt_counts = jnp.stack([counts_01, counts_12], axis=1)
         batch_EA = batch_EA / bt_counts
 
-        triplets = jax.vmap(DERTriplet.init, (0, 0, 0, 0, 0, 0, 0, 0, 0, None))(
+        triplets = jax.vmap(triplet_factory, (0, 0, 0, 0, 0, 0, 0, 0, 0, None))(
             node_dofs,
             top.triplet_edge_dofs,
             top.triplet_dir_dofs,
@@ -148,12 +155,14 @@ def from_legacy(
         ks = jnp.repeat(jnp.array([[ks]]), n_hinges, axis=0)
         kb = jnp.repeat(jnp.array([[kb]]), n_hinges, axis=0)
         # TODO: do ks scaling like with rods
-        hinges = jax.vmap(DESHinge.init, (0, 0, 0, 0, None))(
+        hinges = jax.vmap(hinge_factory, (0, 0, 0, 0, None))(
             top.hinge_dofs, l_k, ks, kb, state
         )
     return top, state, mass, triplets, hinges
 
 
+# Only here for HoDEL paper submission
+# @DeprecationWarning
 def from_legacy_custom(
     mesh: Mesh,
     geom: Geometry,

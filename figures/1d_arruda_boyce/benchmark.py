@@ -19,7 +19,7 @@ from helper import (
 
 # nepochs set for >=30 seconds wall-clock
 hodel_3_config = TrainConfig(
-    method=hodel.Method.Minimization,
+    method=hodel.Method.HODEL,
     nepochs=6000,
     lr=1e-3,
     decay_steps=2000,
@@ -29,7 +29,7 @@ hodel_3_config = TrainConfig(
     model_cls=HoDELNN,
 )
 hodel_1_config = TrainConfig(
-    method=hodel.Method.Minimization,
+    method=hodel.Method.HODEL,
     nepochs=6000,
     lr=1e-2,
     decay_steps=2000,
@@ -39,7 +39,7 @@ hodel_1_config = TrainConfig(
     model_cls=HoDELNN,
 )
 pinn_config = TrainConfig(
-    method=hodel.Method.Residual,
+    method=hodel.Method.PINN,
     nepochs=650000,
     lr=1e-3,
     decay_steps=30000,
@@ -93,7 +93,7 @@ def run_warm_start(
         xf_stars,
         jax.random.uniform(key, (2,)),
         aux,
-        method=hodel.Method.Residual,
+        method=hodel.Method.PINN,
         optim=optim,
         nepochs=nepochs,
     )

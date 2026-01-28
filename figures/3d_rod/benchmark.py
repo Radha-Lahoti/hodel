@@ -19,11 +19,17 @@ class TrainConfig(NamedTuple):
     nepochs: int
 
 
-pinn_config = TrainConfig(hodel.Method.Residual, 1e-5, 200)
-pinn_03_config = TrainConfig(hodel.Method.Residual, 1e-6, 200)
-hodel_config = TrainConfig(hodel.Method.Minimization, 1e-7, 200)
-deq_config = TrainConfig(hodel.Method.DEQ, 5e-6, 200)
-config_map = {"pinn": pinn_config, "hodel": hodel_config, "deq": deq_config}
+pinn_config = TrainConfig(hodel.Method.PINN, 1e-5, 200)
+pinn_03_config = TrainConfig(hodel.Method.PINN, 1e-6, 200)
+hodel_config = TrainConfig(hodel.Method.HODEL, 1e-7, 200)
+deq_config = TrainConfig(hodel.Method.DEQ, 1e-6, 700)
+node_config = TrainConfig(hodel.Method.ODE, 1e-6, 24)
+config_map = {
+    "pinn": pinn_config,
+    "hodel": hodel_config,
+    "deq": deq_config,
+    "node": node_config,
+}
 
 
 def clip_strictly_positive(eps=1e-9):

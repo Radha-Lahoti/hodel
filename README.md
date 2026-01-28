@@ -1,4 +1,4 @@
-## HoDEL
+## HoDEL: Homotopy-inspired Differentiable Energy Learning from Equilibrium Shapes
 
 ### Getting Started
 
@@ -7,8 +7,10 @@
 
 > If you have CUDA device, `uv sync --extra cuda` installs `jax[cuda13]`.
 
-### TODO
+### Figures
 
-- [x] 1D Arruday Boyce tractable example.
-- [ ] 2D Slinky centerline deformed by robotic manipulator.
-- [ ] 3D Wide ribbon deformed in Abaqus.
+Within `figures`, we have three folders with additional `README.md` on how to run all relevant benchmark and visualizations. If you are installing from GitHub, various `.npz` will not exist for various `.ipynb`.
+
+- [x] 1D Arruda Boyce deformed in FEA.
+- [x] 3D rod deformed in Dismech.
+- [x] 3D Wide ribbon deformed in FEA.
