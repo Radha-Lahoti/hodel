@@ -18,6 +18,8 @@ Among existing approaches, PINNs, DEQs, and NODE-style models are the closest fo
 - DEQs formulate implicit fixed-point problems,
 - NODEs provide a continuous-depth baseline via learned dynamics.
 
+To apply NODE to our static setting, we formulated a static equilibria evolution operator (requiring a linear solve per evaluation). We included it to demonstrate that tracking pseudo-dynamics remains prohibitively stiff and infeasible for this problem.
+
 While these methods were originally introduced some time ago, they remain the standard formulations for implicit or physics-constrained learning, and are still widely used as baselines in recent work.
 
 More recent methods in differentiable physics and simulator learning typically rely on trajectory supervision or forward rollouts, and therefore are not directly comparable in our setting. As a result, the set of applicable baselines is inherently more limited.
@@ -62,7 +64,7 @@ In 1D, this structure is banded, yielding $O(N)$ solves. For 2D shells and 3D vo
 
 Importantly, the same sparse system appears in both the forward (Newton) and backward (IFT) passes, allowing factorization reuse, which significantly reduces training cost.
 
-We will revise the manuscript to clarify that the $O(N)$ claim applies to 1D connectivity, and clarify expected scaling in higher dimensions where the hessian is sparse but not banded.
+We will revise the manuscript to clarify that the $O(N)$ claim applies to 1D connectivity, and clarify expected scaling in higher dimensions where the Hessian is sparse but not banded.
 
 
 ## Summary of revisions
