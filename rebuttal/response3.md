@@ -23,7 +23,7 @@ Our goal is to study regimes with limited equilibrium observations (even a singl
 ------------------------------------------------------------------------
 ### 3. Time-budget evaluation vs. gradient steps
 
-We report wall-clock time to provide a hardware-realistic comparison. PINNs/DEQs benefit from GPU-parallel batching, whereas HoDEL requires sequential λ-continuation. Comparing by steps or FLOPs would therefore favor HoDEL and not reflect runtime cost. Empirically, HoDEL converges in fewer gradient steps due to better conditioning and larger stable learning rates (e.g., ~1k vs ~5k for DEQ in 1D).
+We report wall-clock time to provide a hardware-realistic comparison. PINNs/DEQs benefit from batching across λs, whereas HoDEL requires sequential λ-continuation. Comparing by gradient steps or FLOPs would therefore unrealistically favor HoDEL and not reflect true runtime cost. Empirically, HoDEL converges in significantly fewer gradient steps due to better conditioning and larger stable learning rates (e.g., ~1k vs ~5k for DEQ in 1D). We will explain these results more clearly in the final draft.
 
 ------------------------------------------------------------------------
 ### 4. Comparison to differentiable simulation methods
@@ -38,12 +38,12 @@ In our setting, strain-MLP and strain-ICNN achieve similar accuracy when stable,
 ------------------------------------------------------------------------
 ### 6. Static formulation and bifurcations
 
-We agree that static formulations cannot resolve branch selection near bifurcations, which depends on dynamics. Our method targets quasi-static regimes where equilibrium trajectories are well-defined and continuation enables stable tracking. Extending HoDEL to quasi-static or dynamic formulations that incorporate inertia is an important direction for future work as mentioned in the manuscript.
+We agree that purely static formulations cannot resolve branch selection near bifurcations, which depends on transient dynamics. Our current method targets stable quasi-static regimes where equilibrium trajectories are well-defined and continuation enables reliable tracking. Extending HoDEL to dynamic formulations that incorporate inertia, or other forces which model the pertubations that dictate branch selection, is an important direction for future work, as noted in the manuscript.
 
 ------------------------------------------------------------------------
 ### 7. Noise model
 
-We agree that additive Gaussian noise is a simplified model of experimental uncertainty. It provides a controlled setting to evaluate robustness across methods. In this setting, HoDEL shows improved stability due to its solution-dependent formulation and equilibrium constraints.
+We agree that additive Gaussian noise is a simplified model of uncertainty, and we use it a necessary foundational benchmark. Methods which diverge under zero-mean noise will inevitably fail on real-world data. While we do not claim robustness to systematic biases or other complex errors, HoDEL is structurally better equipped to resist unphysical perturbations than residual-fitting baselines. We will explicitly discuss real-world noise challenges as future work.
 
 ------------------------------------------------------------------------
 ### 8. Implementation details and reproducibility
