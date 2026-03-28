@@ -8,15 +8,15 @@ We agree that optimizer choice is important in ill-conditioned physics problems,
 
 Following the reviewer’s suggestion, we experimented with L-BFGS for the PINN baseline on the 3D ribbon benchmark. We observe that:
 
-- L-BFGS reduces the number of required training iterations from ~$10^4$ (Adam) to ~$10^3$, indicating improved optimization efficiency,
-- however, the final converged loss remains comparable or slightly worse, and training remains sensitive to initialization.
+- L-BFGS reduces the number of required training iterations from ~$10^4$ (Adam) to ~$10^2$, indicating improved optimization efficiency when using second-order methods.
+- However, the final converged loss remains comparable, and equally sensitive to initialization.
 
-In contrast, HoDEL converges within ~$10^2$ iterations while achieving lower final error, demonstrating both faster and more reliable convergence.
+In contrast, HoDEL converges within ~$50$ iterations while achieving lower final error, demonstrating both faster and more reliable convergence.
 
 Overall, while second-order optimization improves PINN training speed, it does not eliminate the performance gap with HoDEL. This is consistent with a key distinction in problem formulation:
 
-- PINNs optimize a global residual objective, whose ill-conditioning persists regardless of optimizer choice,
-- HoDEL instead solves a sequence of well-conditioned equilibrium problems via continuation and Newton updates.
+- PINNs optimize a pointwise residual objective. In the stiff regime, the force drastically changes across small state differences, making this objective sensitive to measurement and unmodeled effects.
+- HoDEL instead solves the equilibrium condition and supervises at the trajectory level. This shifts the optimization from a highly sensitive derivative space to the lower order state space.
 
 Thus, HoDEL improves conditioning at the solver level, whereas second-order methods act only at the optimizer level.
 
