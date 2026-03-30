@@ -41,8 +41,8 @@ The components serve distinct roles, and can be grouped into essential algorithm
 **Essential components** (removing these breaks the method):
 
 - **Continuation (λ-stepping):** necessary to avoid divergence in stiff regimes; without it, Newton iterations frequently fail to converge.
-- **Energy-based formulation:** ensures conservative forces and enables implicit differentiation via equilibrium conditions.
-- Strain-based representation: enforces locality and invariance; removing it leads to significantly worse generalization (Table 5).
+- **Energy-based formulation:** ensures conservative force field by design and avoids energy drift.
+- **Strain-based representation:** enforces locality and invariance; removing it leads to significantly worse generalization (Table 5).
 
 **Structural components** (not strictly required, but beneficial):
 - **Stencil decomposition:** induces sparse, local interactions, enabling scalable linear solves.
