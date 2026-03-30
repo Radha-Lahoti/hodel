@@ -31,6 +31,7 @@ The ICNN enforces convexity of the local strain energy density $\Phi_\theta(\eps
 
 The ICNN does restrict the model class to convex strain energy densities, which excludes materials exhibiting non-convex constitutive behavior (e.g., softening or phase transitions). However, for the class of purely elastic materials considered in this work (rods, ribbons), convexity is physically well-motivated and improves stability. We will clarify this scope and discuss possible extensions in the revision.
 
+------------------------------------------------------------------------
 ## Summary of revisions
 We will: 
 - Add a brief discussion on the effect of second-order optimizers (L-BFGS) on PINN training, including convergence speed and final performance.
