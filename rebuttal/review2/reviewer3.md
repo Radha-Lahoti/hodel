@@ -45,6 +45,8 @@ We agree that quantitative comparison is necessary. Below is the MEA for ICNN vs
 | ICNN         | 0.176     |
 | MLP          | 0.183     |
 
+Both architectures achieve similar performance in this setting, consistent with Table 5, where convergence rates are identical.
+
 We evaluated a highly nonlinear 1D system (slinky), where the learned energy dominates the prior. The resulting force–displacement curves (MLP vs ICNN) compared to ground truth are shown here:  
 [ICNN vs MLP for slinky 1D](https://figshare.com/s/46aafad3f50d6bc0d67c)
 
