@@ -2,17 +2,19 @@ We thank the reviewer for the clarification and agree that the role of individua
 
 ---
 
-### (a) λ-continuation (essential)
+### (1) λ-continuation (essential)
 This has already been ablated in Sec. 5.3.1 (Fig. 4). Without continuation (large Δλ), Newton iterations fail to converge, whereas sufficiently small steps yield 100% convergence. This demonstrates that continuation is not a heuristic but a necessary mechanism for solving stiff, nonlinear equilibrium problems.
 
 ---
 
-### (b) Strain-based representation (essential)
-This is quantitatively demonstrated in Table 5. Using raw coordinates leads to 0% convergence, while strain-based inputs achieve 100% convergence (for both ICNN and MLP). This isolates representation as critical: strain enforces locality and invariance, whereas coordinate-based models violate these properties and fail to learn meaningful constitutive behavior.
+### (2) Strain-based representation (essential)
+A physically consistent model should not depend on an arbitrary reference frame. Raw coordinates based representations violate this: they depend on the chosen frame and do not enforce energy invariance or force equivariance. In contrast, strain-based representations are local and inherently frame-invariant.
+
+This is quantitatively demonstrated in Table 5: using raw coordinates leads to 0% convergence, while strain-based inputs achieve 100% convergence (for both ICNN and MLP). This isolates representation as the critical factor.
 
 ---
 
-### (c) ICNN vs MLP (structural component)
+### (3) ICNN vs MLP (structural component)
 We agree that quantitative comparison is necessary. Below is the MEA for ICNN vs MLP architectures on the ribbon example where ICNN is from the original experiment (MLP is averaged over 10 seeds due to rebuttal time constraints):
 
 | Architecture | MAE Loss  |
@@ -31,7 +33,7 @@ We will revise the manuscript to clarify that ICNN is not strictly required for 
 
 ---
 
-### (d) Stencil decomposition (local energy structure)
+### (4) Stencil decomposition (local energy structure)
 We agree this component warrants clarification. Rather than introducing an additional ablation, we emphasize that stencil-based decomposition follows directly from the constitutive modeling assumption: the total energy is expressed as a sum of local strain energies.
 
 Removing this structure corresponds to learning a global energy over all DOFs, which:
@@ -43,12 +45,12 @@ Thus, stencil decomposition is not an architectural heuristic but a modeling ass
 
 ---
 
-### (e) Energy vs force parameterization
+### (5) Energy vs force parameterization
 We further clarify why we learn energy rather than force directly. A force-based model:
 - does not guarantee a conservative field (violating integrability), and  
 - suffers from aliasing in strain space, where different deformation modes can produce similar strain magnitudes but require different force directions.
 
-In contrast, parameterizing energy ensures physically consistent forces via \(F = \nabla E\), which is critical under equilibrium-only supervision.
+In contrast, parameterizing energy ensures physically consistent forces via $F = \nabla E$, which is critical under equilibrium-only supervision.
 
 ---
 
@@ -63,3 +65,5 @@ In contrast, parameterizing energy ensures physically consistent forces via \(F 
 | Stencil structure | Encodes locality and preserves sparsity |
 
 Overall, we adopt an energy-based formulation to ensure a conservative force field. Continuation and strain-based energy modeling are essential for stable and physically consistent learning, while ICNN and stencil decomposition provide additional stability and scalability aligned with physical modeling principles.
+
+We thank the reviewer for their helpful feedback and hope the above clarifications address the concerns.

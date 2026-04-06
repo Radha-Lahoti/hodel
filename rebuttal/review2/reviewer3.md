@@ -14,7 +14,7 @@ Thus:
 which can be handled using standard sparse solvers as in FEM. We acknowledge that empirical validation in 2D/3D is not included, as the paper focuses on DLOs where stiffness and continuation challenges are already pronounced. We will clarify this scope and avoid overgeneralization in the revision.
 
 **(2) Data-regime ablation.**  
-We agree this is an important point. We conducted an additional ablation on the 1D system by varying the number of training trajectories ($\eta=0.03$) and compared their final median relative error ($10^{-2}$) (# of trajectories = 1 is from the original experiment. # of trajectories= 3, 5 are averaged over 10 seeds instead due to rebuttal time constraints):
+We agree this is an important point. We conducted an additional ablation on the 1D system by varying the number of training trajectories ($\eta=0.03$) and compared their final median relative error ($10^{-2}$). Number of trajectories = 1 is from the original experiment. Number of trajectories= 3, 5 are averaged over 10 seeds instead due to rebuttal time constraints.
 
 | # trajectories | HoDEL | DEQ | PINN |
 |---------------|------|-----|------|
@@ -53,4 +53,4 @@ We evaluated a highly nonlinear 1D system (slinky), where the learned energy dom
 In this regime, ICNN significantly outperforms MLP, as convexity enforces positive semi-definite stiffness and improves stability, particularly under extrapolation. This complements our earlier observation that differences are smaller when learning residual corrections.
 
 **Summary.**  
-In the revision, we will add: (i) data-regime ablations, (iii) ICNN vs MLP quantitative loss comparison, and (iv) clearer scoping of 2D/3D claims. We thank the reviewer for helping strengthen the paper.
+In the revision, we will add: (i) data-regime ablations, (ii) ICNN vs MLP quantitative loss comparison, and (iii) clearer scoping of 2D/3D claims. We thank the reviewer for their helpful feedback and hope the above clarifications address the concerns.
