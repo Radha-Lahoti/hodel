@@ -14,7 +14,7 @@ Thus:
 which can be handled using standard sparse solvers as in FEM. We acknowledge that empirical validation in 2D/3D is not included, as the paper focuses on DLOs where stiffness and continuation challenges are already pronounced. We will clarify this scope and avoid overgeneralization in the revision.
 
 **(2) Data-regime ablation.**  
-We agree this is an important point. We conducted an additional ablation on the 1D system by varying the number of training trajectories ($\eta=0.03$) and compared their final median relative error ($10^{-2}$):
+We agree this is an important point. We conducted an additional ablation on the 1D system by varying the number of training trajectories ($\eta=0.03$) and compared their final median relative error ($10^{-2}$) (# of trajectories = 1 is from the original experiment. # of trajectories= 3, 5 are averaged over 10 seeds instead due to rebuttal time constraints):
 
 | # trajectories | HoDEL | DEQ | PINN |
 |---------------|------|-----|------|
@@ -38,7 +38,14 @@ This shows that HoDEL reaches comparable accuracy with significantly fewer optim
 We agree that continuation is standard in numerical mechanics. Our contribution is not continuation itself, but its integration with: (i) neural energy learning, (ii) implicit differentiation via IFT, and (iii) equilibrium-only supervision in stiff regimes. To our knowledge, existing continuation methods are not designed for learning constitutive models via gradient-based optimization under equilibrium-only observations. We will clarify this distinction more explicitly.
 
 **(5) ICNN vs MLP.**  
-We agree that quantitative comparison is necessary. We evaluated a highly nonlinear 1D system (slinky), where the learned energy dominates the prior. The resulting force–displacement curves (MLP vs ICNN) compared to ground truth are shown here:  
+We agree that quantitative comparison is necessary. Below is the MEA for ICNN vs MLP architectures on the ribbon example where ICNN is from the original experiment (MLP is averaged over 10 seeds due to rebuttal time constraints):
+
+| Architecture | MAE Loss  |
+|--------------|-----------|
+| ICNN         | 0.176     |
+| MLP          | 0.183     |
+
+We evaluated a highly nonlinear 1D system (slinky), where the learned energy dominates the prior. The resulting force–displacement curves (MLP vs ICNN) compared to ground truth are shown here:  
 [ICNN vs MLP for slinky 1D](https://figshare.com/s/46aafad3f50d6bc0d67c)
 
 In this regime, ICNN significantly outperforms MLP, as convexity enforces positive semi-definite stiffness and improves stability, particularly under extrapolation. This complements our earlier observation that differences are smaller when learning residual corrections.
