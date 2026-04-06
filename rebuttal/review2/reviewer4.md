@@ -13,12 +13,12 @@ This is quantitatively demonstrated in Table 5. Using raw coordinates leads to 0
 ---
 
 ### (c) ICNN vs MLP (structural component)
-We agree that quantitative comparison is necessary. Below are train and test losses for ICNN vs MLP architectures on the ribbon example:
+We agree that quantitative comparison is necessary. Below is the MEA for ICNN vs MLP architectures on the ribbon example where ICNN is from the original experiment (MLP is averaged over 10 seeds due to rebuttal time constraints):
 
-| Architecture | Train Loss | Test Loss |
-|--------------|------------|-----------|
-| ICNN         | ...        | ...       |
-| MLP          | ...        | ...       |
+| Architecture | MAE Loss  |
+|--------------|-----------|
+| ICNN         | 0.176     |
+| MLP          | 0.183     |
 
 Both architectures achieve similar performance in this setting, consistent with Table 5, where convergence rates are identical.
 
